@@ -1,0 +1,120 @@
+.container {
+  /* Inherit global font stack */
+  font-family: inherit;
+  background: #fff;
+  color: #1f2937; /* gray-800 */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 404 Section */
+.page404 {
+  padding: 40px 9%;
+  background: #fff;
+  margin-top: 80px;
+  min-height: 60vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.wrapper {
+  background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+  height: 400px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.wrapper h1 {
+  font-size: 80px;
+  text-align: center;
+  margin: 0;
+  color: #111827; /* gray-900 */
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
+  margin-top: -50px;
+}
+
+.msg h3 {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.msg p {
+  font-size: 16px;
+  font-weight: 500;
+  color: #4b5563; /* gray-600 */
+}
+
+/* Back Button */
+.backbtn {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  border-radius: 9999px; /* rounded-full */
+  transition: all 0.2s ease;
+  color: #fff;
+  /* Navbar primary color */
+  background: #FF6B6B; 
+  box-shadow: 0 4px 6px -1px rgba(255, 107, 107, 0.3), 0 2px 4px -1px rgba(255, 107, 107, 0.2);
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.btn:hover {
+  background: #ff8585; /* lighter shade */
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(255, 107, 107, 0.4), 0 4px 6px -2px rgba(255, 107, 107, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn i {
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.btn:hover i {
+  transform: translateX(-4px);
+}
+
+/* Responsiveness */
+@media(max-width:450px) {
+  .page404 {
+      padding: 20px;
+      margin-top: 60px;
+  }
+  .wrapper {
+    height: 300px;
+    background-size: contain;
+  }
+  .wrapper h1 {
+      font-size: 50px;
+  }
+  .msg h3 {
+      font-size: 28px;
+  }
+}

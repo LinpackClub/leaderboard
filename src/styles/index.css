@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --color-bg-dark: var(--bg-dark);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+  --color-border: var(--border);
+  
+  /* Define fonts in theme */
+  --font-sans: 'Outfit', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+}
+
+@layer base {
+  :root {
+    /* Dark Theme Colors */
+    --bg-dark: #0f0f13;
+    --bg-card: #1a1a20;
+    --bg-card-hover: #23232a;
+    --primary: #8b5cf6; /* Vivid Purple for Dark Mode */
+    --primary-hover: #7c3aed;
+    --text-main: #ffffff;
+    --text-muted: #a1a1aa;
+    --text-dim: #52525b;
+    --border: #27272a;
+
+    /* Header Gradient & Text - Dark Mode */
+    --header-gradient-from: #2e1065; /* violet-950 */
+    --header-gradient-via: #1e1b4b;   /* indigo-950 */
+    --header-gradient-to: #020617;    /* slate-950 */
+    --header-text: #ffffff;
+    --header-text-dim: #94a3b8;       /* slate-400 */
+
+    /* Ranks */
+    --rank-1: #ffd700;
+    --rank-2: #c0c0c0;
+    --rank-3: #cd7f32;
+
+    /* Spacing */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    
+    /* Animation */
+    --transition-fast: 0.2s ease;
+  }
+
+  [data-theme="light"] {
+    /* Light Theme Colors */
+    --bg-dark: #f5f5f7;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f0f2;
+    --primary: #ff6b00; /* Orange for Light Mode */
+    --primary-hover: #ff8533;
+    --text-main: #1d1d1f;
+    --text-muted: #6e6e73;
+    --text-dim: #86868b;
+    --border: #e2e2e5;
+
+    /* Header Gradient & Text - Light Mode */
+    --header-gradient-from: #fdba74; /* orange-300 */
+    --header-gradient-via: #fde68a;  /* amber-200 */
+    --header-gradient-to: #fff7ed;   /* orange-50 */
+    --header-text: #431407;          /* orange-950 */
+    --header-text-dim: #7c2d12;      /* orange-900 */
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  html {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+@layer utilities {
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .glass-panel {
+    background: var(--bg-card);
+    @apply border border-border;
+  }
+  
+  [data-theme="dark"] .glass-panel {
+     background: rgba(26, 26, 32, 0.8);
+     backdrop-filter: blur(12px);
+     border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Keep slight transparency for light mode if desired, or solid is fine. 
+     For consistency with "sleek", let's make light mode solid white or very slight transp */
+  [data-theme="light"] .glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+    outline: none;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--text-muted);
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--bg-card-hover);
+    color: var(--text-main);
+  }
+}
