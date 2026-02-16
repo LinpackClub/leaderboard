@@ -8,7 +8,7 @@ import { Trophy } from 'lucide-react';
 import LeaderboardSkeleton from './LeaderboardSkeleton';
 
 const Leaderboard = () => {
-  const { rankedTeams, visibility, isLoading, maxScores } = useLeaderboard();
+  const { rankedTeams, visibility, isLoading, maxScores, realtimeBlocked } = useLeaderboard();
 
   if (isLoading) {
     return <LeaderboardSkeleton />;
@@ -121,6 +121,13 @@ const Leaderboard = () => {
                 <LeaderboardTable teams={rankedTeams} visibility={visibility} maxScores={maxScores} />
             </motion.div>
         </>
+      )}
+      {/* Realtime Status Banner */}
+      {realtimeBlocked && (
+          <div className="fixed bottom-4 right-4 z-50 bg-bg-card/90 backdrop-blur border border-yellow-500/30 text-yellow-500 px-4 py-2 rounded-lg shadow-lg text-xs md:text-sm flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
+              <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+              Live updates limited by browser privacy settings. Updating every few seconds.
+          </div>
       )}
     </div>
   );

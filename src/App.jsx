@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LeaderboardProvider } from './context/LeaderboardContext';
 import { AuthProvider } from './context/AuthContext';
+import { AdminLeaderboardProvider } from './context/AdminLeaderboardContext';
 import { useTheme } from './context/ThemeContext';
 import ThemeSplash from './components/ui/ThemeSplash';
 import MainLayout from './layout/MainLayout';
@@ -36,7 +37,9 @@ function AppContent() {
                 <Route index element={<Leaderboard />} />
                 <Route path="admin" element={
                   <ProtectedRoute>
-                    <AdminPanel />
+                    <AdminLeaderboardProvider>
+                      <AdminPanel />
+                    </AdminLeaderboardProvider>
                   </ProtectedRoute>
                 } />
                 <Route path="*" element={<NotFound />} />

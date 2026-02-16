@@ -41,7 +41,7 @@ const BulkUpload = () => {
         throw new Error("Missing 'Team Name' column");
       }
 
-      importTeams(jsonData);
+      await importTeams(jsonData);
       setMessage(`Successfully processed ${jsonData.length} rows`);
       setIsError(false);
       

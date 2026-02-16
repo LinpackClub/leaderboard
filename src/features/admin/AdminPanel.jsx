@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLeaderboard } from '../../context/LeaderboardContext';
+import { useAdminLeaderboard } from '../../context/AdminLeaderboardContext';
 import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff } from 'lucide-react';
 import BulkUpload from './BulkUpload';
 import { cn } from '../../utils/cn';
@@ -26,14 +27,17 @@ const Toggle = ({ label, checked, onChange }) => (
 
 const AdminPanel = () => {
   const { 
-    teams, 
+    // teams, // Replaced by localTeams
     addTeam, 
-    updateScore, 
+    // updateScore, // Replaced by updateScoreOptimistic
     resetScores, 
     visibility, 
     toggleVisibility,
     resetData 
   } = useLeaderboard();
+
+  // Use the new Optimistic Context
+  const { localTeams, updateScoreOptimistic, isSyncing } = useAdminLeaderboard();
 
   const [newTeamName, setNewTeamName] = useState('');
 
@@ -55,7 +59,12 @@ const AdminPanel = () => {
            <p className="text-text-muted">Manage teams, scores, and visibility</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+            {isSyncing && (
+                <span className="text-sm text-text-muted animate-pulse flex items-center gap-2 mr-4">
+                     <Save size={16} /> Saving...
+                </span>
+            )}
            <button onClick={resetScores} className="btn bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20">
                <RotateCcw size={16} className="mr-2" />
                Reset All Scores
@@ -136,71 +145,59 @@ const AdminPanel = () => {
               <Save size={20} className="text-primary" />
               Manage Scores
           </h2>
-           <div className="overflow-x-auto">
-               <table className="w-full text-left border-collapse">
-                   <thead>
-                       <tr className="text-xs text-text-muted uppercase border-b border-border">
-                           <th className="p-4">Team</th>
-                           <th className="p-4 w-32 text-center">Ice Cream</th>
-                           <th className="p-4 w-32 text-center">Dart</th>
-                           <th className="p-4 w-32 text-center">Balloon</th>
-                           <th className="p-4 w-32 text-center">Cup Stack</th>
-                           <th className="p-4 w-24 text-right text-text-main">Total</th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                       {teams.map(team => (
-                           <tr key={team.id} className="border-b border-border last:border-0 hover:bg-bg-card-hover/50 transition-colors">
-                               <td className="p-4 font-medium text-text-main">{team.name}</td>
-                               <td className="p-2">
-                                   <input
-                                       type="number"
-                                       className="w-full bg-bg-card-hover border border-border rounded px-2 py-1 text-center focus:border-primary focus:outline-none text-text-main"
-                                       value={team.iceCreamScore}
-                                       min="0"
-                                       onChange={(e) => updateScore(team.id, 'iceCreamScore', e.target.value)}
-                                   />
-                               </td>
-                               <td className="p-2">
-                                   <input
-                                       type="number"
-                                       className="w-full bg-bg-card-hover border border-border rounded px-2 py-1 text-center focus:border-primary focus:outline-none text-text-main"
-                                       value={team.dartScore}
-                                        min="0"
-                                       onChange={(e) => updateScore(team.id, 'dartScore', e.target.value)}
-                                   />
-                               </td>
-                               <td className="p-2">
-                                   <input
-                                       type="number"
-                                       className="w-full bg-bg-card-hover border border-border rounded px-2 py-1 text-center focus:border-primary focus:outline-none text-text-main"
-                                       value={team.balloonScore}
-                                        min="0"
-                                       onChange={(e) => updateScore(team.id, 'balloonScore', e.target.value)}
-                                   />
-                               </td>
-                               <td className="p-2">
-                                   <input
-                                       type="number"
-                                       className="w-full bg-bg-card-hover border border-border rounded px-2 py-1 text-center focus:border-primary focus:outline-none text-text-main"
-                                       value={team.cupStackScore}
-                                        min="0"
-                                       onChange={(e) => updateScore(team.id, 'cupStackScore', e.target.value)}
-                                   />
-                               </td>
-                               <td className="p-4 text-right font-bold text-primary text-xl">
-                                   {
-                                     (Number(team.iceCreamScore) || 0) + 
-                                     (Number(team.dartScore) || 0) + 
-                                     (Number(team.balloonScore) || 0) + 
-                                     (Number(team.cupStackScore) || 0)
-                                   }
-                               </td>
-                           </tr>
-                       ))}
-                   </tbody>
-               </table>
-           </div>
+          <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                  <thead className="bg-bg-card-hover text-text-muted uppercase text-sm font-semibold">
+                      <tr>
+                          <th className="p-4 rounded-tl-lg">Rank</th>
+                          <th className="p-4">Team Name</th>
+                          <th className="p-4 text-center">Ice Cream</th>
+                          <th className="p-4 text-center">Dart</th>
+                          <th className="p-4 text-center">Balloon</th>
+                          <th className="p-4 text-center">Cup Stack</th>
+                          <th className="p-4 text-right rounded-tr-lg">Total</th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                      {localTeams.map((team, index) => (
+                          <tr key={team.id} className="hover:bg-bg-card-hover/50 transition-colors">
+                              <td className="p-4 font-bold text-text-muted">#{team.rank}</td>
+                              <td className="p-4 font-medium text-text-main">{team.name}</td>
+                              
+                              {/* Score Columns with +/- buttons */}
+                              {['iceCreamScore', 'dartScore', 'balloonScore', 'cupStackScore'].map((field) => (
+                                  <td key={field} className="p-4">
+                                      <div className="flex items-center justify-center gap-2">
+                                          <button 
+                                            onClick={() => updateScoreOptimistic(team.id, field, -1)}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-card border border-border hover:border-red-500/50 hover:text-red-500 transition-colors"
+                                          >
+                                              -
+                                          </button>
+                                          <span className="w-8 text-center font-bold text-text-main">{team[field]}</span>
+                                          <button 
+                                            onClick={() => updateScoreOptimistic(team.id, field, 1)}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-card border border-border hover:border-green-500/50 hover:text-green-500 transition-colors"
+                                          >
+                                              +
+                                          </button>
+                                      </div>
+                                  </td>
+                              ))}
+
+                              <td className="p-4 text-right font-bold text-primary text-lg">
+                                  {team.totalScore}
+                              </td>
+                          </tr>
+                      ))}
+                  </tbody>
+              </table>
+          </div>
+          {localTeams.length === 0 && (
+              <div className="p-8 text-center text-text-muted">
+                  No teams found. Add a team above to get started.
+              </div>
+          )}
       </section>
 
     </div>
