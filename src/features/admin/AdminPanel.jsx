@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLeaderboard } from '../../context/LeaderboardContext';
 import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff } from 'lucide-react';
+import BulkUpload from './BulkUpload';
 import { cn } from '../../utils/cn';
 
 const Toggle = ({ label, checked, onChange }) => (
@@ -65,6 +66,9 @@ const AdminPanel = () => {
            </button>
         </div>
       </div>
+
+      {/* Bulk Upload */}
+      <BulkUpload />
 
       {/* Visibility Controls */}
       <section className="glass-panel p-6 rounded-xl border border-border">

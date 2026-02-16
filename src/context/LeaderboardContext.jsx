@@ -53,6 +53,15 @@ export const LeaderboardProvider = ({ children }) => {
   // --- Derived State ---
   const rankedTeams = useMemo(() => calculateRankings(teams), [teams]);
 
+  const maxScores = useMemo(() => {
+    return {
+      iceCream: Math.max(...teams.map(t => Number(t.iceCreamScore) || 0), 0),
+      dart: Math.max(...teams.map(t => Number(t.dartScore) || 0), 0),
+      balloon: Math.max(...teams.map(t => Number(t.balloonScore) || 0), 0),
+      cupStack: Math.max(...teams.map(t => Number(t.cupStackScore) || 0), 0),
+    };
+  }, [teams]);
+
   // --- Actions ---
   const addTeam = (name) => {
     const newTeam = {
@@ -95,6 +104,45 @@ export const LeaderboardProvider = ({ children }) => {
       }
   }
 
+  const importTeams = (teamsData) => {
+    
+    setTeams(prevTeams => {
+      const newTeams = [...prevTeams];
+      
+      teamsData.forEach(row => {
+        const teamName = row['Team Name'];
+        if (!teamName) return;
+
+        const existingTeamIndex = newTeams.findIndex(t => t.name.toLowerCase() === teamName.toLowerCase());
+        
+        const teamStats = {
+          iceCreamScore: Number(row['Ice Cream']) || 0,
+          dartScore: Number(row['Dart']) || 0,
+          balloonScore: Number(row['Balloon']) || 0,
+          cupStackScore: Number(row['Cup Stack']) || 0
+        };
+
+        if (existingTeamIndex >= 0) {
+          // Update existing team
+          newTeams[existingTeamIndex] = {
+            ...newTeams[existingTeamIndex],
+            ...teamStats
+          };
+        } else {
+          // Create new team
+          newTeams.push({
+            id: crypto.randomUUID(),
+            name: teamName,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${teamName}`,
+            ...teamStats
+          });
+        }
+      });
+      
+      return newTeams;
+    });
+  };
+
   const value = {
     teams,
     rankedTeams,
@@ -103,7 +151,9 @@ export const LeaderboardProvider = ({ children }) => {
     updateScore,
     resetScores,
     toggleVisibility,
-    resetData
+    resetData,
+    importTeams,
+    maxScores
   };
 
   return (

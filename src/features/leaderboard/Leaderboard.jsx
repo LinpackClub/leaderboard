@@ -8,7 +8,7 @@ import { Trophy } from 'lucide-react';
 import LeaderboardSkeleton from './LeaderboardSkeleton';
 
 const Leaderboard = () => {
-  const { rankedTeams, visibility, isLoading } = useLeaderboard();
+  const { rankedTeams, visibility, isLoading, maxScores } = useLeaderboard();
 
   if (isLoading) {
     return <LeaderboardSkeleton />;
@@ -65,17 +65,17 @@ const Leaderboard = () => {
 
             {/* Podium Section integrated into the header for nice overlap effect */}
             {visibility.masterToggle && topThree.length > 0 && (
-                <div className="grid grid-cols-2 md:flex md:flex-row items-end justify-center gap-4 md:gap-8 mt-8 pb-12">
+                <div className="grid grid-cols-2 md:flex md:flex-row items-end justify-center gap-4 md:gap-16 mt-8 pb-12">
                      {/* 2nd Place */}
                      {topThree[1] && (
-                         <div className="col-span-1 order-2 md:order-1 w-full md:w-auto transform md:translate-y-4">
+                         <div className="col-span-1 order-2 md:order-1 w-full md:w-auto transform md:translate-y-4 md:min-w-[260px]">
                             <RankCard team={topThree[1]} rank={2} delay={0} />
                          </div>
                      )}
 
                      {/* 1st Place */}
                      {topThree[0] && (
-                         <div className="col-span-2 md:col-span-1 order-1 md:order-2 w-full md:w-auto flex justify-center mb-6 md:mb-0 z-10 transform scale-110 md:scale-125 origin-bottom">
+                         <div className="col-span-2 md:col-span-1 order-1 md:order-2 w-full md:w-auto flex justify-center mb-6 md:mb-0 z-10 transform scale-110 md:scale-125 origin-bottom md:min-w-[280px]">
                              <div className="w-full max-w-[70%] md:max-w-none">
                                 <RankCard team={topThree[0]} rank={1} delay={0} />
                              </div>
@@ -84,7 +84,7 @@ const Leaderboard = () => {
                      
                      {/* 3rd Place */}
                      {topThree[2] && (
-                         <div className="col-span-1 order-3 md:order-3 w-full md:w-auto transform md:translate-y-8">
+                         <div className="col-span-1 order-3 md:order-3 w-full md:w-auto transform md:translate-y-8 md:min-w-[260px]">
                             <RankCard team={topThree[2]} rank={3} delay={0} />
                          </div>
                      )}
@@ -118,7 +118,7 @@ const Leaderboard = () => {
                         Total: {rankedTeams.length}
                     </span>
                 </div>
-                <LeaderboardTable teams={rankedTeams} visibility={visibility} />
+                <LeaderboardTable teams={rankedTeams} visibility={visibility} maxScores={maxScores} />
             </motion.div>
         </>
       )}

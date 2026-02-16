@@ -1,11 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LeaderboardProvider } from './context/LeaderboardContext';
+import { AuthProvider } from './context/AuthContext';
 import { useTheme } from './context/ThemeContext';
 import ThemeSplash from './components/ui/ThemeSplash';
 import MainLayout from './layout/MainLayout';
 import Leaderboard from './features/leaderboard/Leaderboard';
 import AdminPanel from './features/admin/AdminPanel';
+import Login from './features/auth/Login';
+import ProtectedRoute from './components/ui/ProtectedRoute';
 import NotFound from './components/ui/not-found/NotFound';
 
 function AppContent() {
@@ -24,17 +27,24 @@ function AppContent() {
   return (
     <>
       <ThemeSplash isVisible={isTransitioning || isInitialLoading} />
-      <LeaderboardProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Leaderboard />} />
-              <Route path="admin" element={<AdminPanel />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </LeaderboardProvider>
+      <AuthProvider>
+        <LeaderboardProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<Leaderboard />} />
+                <Route path="admin" element={
+                  <ProtectedRoute>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                } />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </LeaderboardProvider>
+      </AuthProvider>
     </>
   );
 }
