@@ -1,11 +1,10 @@
 import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
-import { useLeaderboard } from '../../context/LeaderboardContext';
+import { supabase } from '../../services/supabaseClient';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const BulkUpload = () => {
-  const { importTeams } = useLeaderboard();
   const fileInputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
   const [message, setMessage] = useState(null);
@@ -21,6 +20,19 @@ const BulkUpload = () => {
     }
   };
 
+  // Helper to normalize headers to DB columns
+  const normalizeKey = (header) => {
+      const lower = header.toLowerCase().trim();
+      
+      if (lower.includes('team')) return 'team_name';
+      if (lower.includes('ice') || lower.includes('cream')) return 'ice_cream';
+      if (lower.includes('dart')) return 'dart';
+      if (lower.includes('balloon')) return 'balloon';
+      if (lower.includes('cup') || lower.includes('stack')) return 'cup_stack';
+      
+      return null;
+  };
+
   const processFile = async (file) => {
     try {
       if (!file) return;
@@ -29,20 +41,82 @@ const BulkUpload = () => {
       const workbook = XLSX.read(data);
       const worksheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[worksheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      
+      // Get raw data: array of arrays to handle headers manually
+      const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      if (jsonData.length === 0) {
-        throw new Error("File appears to be empty");
+      if (rawData.length < 2) {
+        throw new Error("File appears to be empty or missing headers");
       }
 
-      // Validate headers (basic check)
-      const firstRow = jsonData[0];
-      if (!('Team Name' in firstRow)) {
-        throw new Error("Missing 'Team Name' column");
+      // Parse Headers
+      const headers = rawData[0];
+      const columnMap = {};
+      
+      headers.forEach((h, index) => {
+          if (h) {
+              const key = normalizeKey(String(h));
+              if (key) columnMap[index] = key;
+          }
+      });
+
+      if (!Object.values(columnMap).includes('team_name')) {
+          throw new Error("Could not find a 'Team Name' column");
       }
 
-      await importTeams(jsonData);
-      setMessage(`Successfully processed ${jsonData.length} rows`);
+      // Parse Rows
+      const validRows = [];
+      
+      // Start from row 1 (index 1)
+      for (let i = 1; i < rawData.length; i++) {
+          const row = rawData[i];
+          if (!row || row.length === 0) continue;
+          
+          const rowData = {};
+          let hasTeam = false;
+
+          // Fill default 0s
+          rowData.ice_cream = 0;
+          rowData.dart = 0;
+          rowData.balloon = 0;
+          rowData.cup_stack = 0;
+
+          Object.keys(columnMap).forEach(colIndex => {
+              const key = columnMap[colIndex];
+              const value = row[colIndex];
+              
+              if (key === 'team_name') {
+                  if (value && String(value).trim()) {
+                      rowData.team_name = String(value).trim();
+                      hasTeam = true;
+                  }
+              } else {
+                  // Scores
+                  rowData[key] = Number(value) || 0;
+              }
+          });
+          
+          if (hasTeam) {
+              // Add updated_at for upsert to trigger change
+              rowData.updated_at = new Date();
+              validRows.push(rowData);
+          }
+      }
+
+      console.table(validRows.slice(0, 5)); // Debug Log
+
+      if (validRows.length === 0) {
+          throw new Error("No valid teams found in the file");
+      }
+
+      // Upsert to Supabase
+      const { error } = await supabase
+        .from('teams')
+        .upsert(validRows, { onConflict: 'team_name' });
+
+      if (error) throw error;
+
+      setMessage(`Successfully processed ${validRows.length} teams`);
       setIsError(false);
       
       // Reset after 3 seconds

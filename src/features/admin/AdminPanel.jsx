@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLeaderboard } from '../../context/LeaderboardContext';
 import { useAdminLeaderboard } from '../../context/AdminLeaderboardContext';
-import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff, Search } from 'lucide-react';
 import BulkUpload from './BulkUpload';
 import { cn } from '../../utils/cn';
 
@@ -40,6 +40,7 @@ const AdminPanel = () => {
   const { localTeams, updateScoreOptimistic, isSyncing } = useAdminLeaderboard();
 
   const [newTeamName, setNewTeamName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddTeam = (e) => {
     e.preventDefault();
@@ -48,6 +49,10 @@ const AdminPanel = () => {
       setNewTeamName('');
     }
   };
+
+  const filteredTeams = localTeams.filter(team => 
+    team.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-8 pb-20">
@@ -141,10 +146,25 @@ const AdminPanel = () => {
 
       {/* Score Management */}
       <section className="glass-panel p-6 rounded-xl overflow-hidden border border-border">
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-text-main">
-              <Save size={20} className="text-primary" />
-              Manage Scores
-          </h2>
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-text-main">
+                  <Save size={20} className="text-primary" />
+                  Manage Scores
+              </h2>
+              
+              {/* Search Bar */}
+              <div className="relative w-full md:w-64">
+                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input 
+                      type="text" 
+                      placeholder="Search teams..." 
+                      className="w-full pl-10 pr-4 py-2 bg-bg-card-hover border border-border rounded-lg focus:outline-none focus:border-primary text-text-main placeholder:text-text-muted"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+              </div>
+          </div>
+
           <div className="overflow-x-auto">
               <table className="w-full text-left">
                   <thead className="bg-bg-card-hover text-text-muted uppercase text-sm font-semibold">
@@ -159,7 +179,7 @@ const AdminPanel = () => {
                       </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                      {localTeams.map((team, index) => (
+                      {filteredTeams.map((team, index) => (
                           <tr key={team.id} className="hover:bg-bg-card-hover/50 transition-colors">
                               <td className="p-4 font-bold text-text-muted">#{team.rank}</td>
                               <td className="p-4 font-medium text-text-main">{team.name}</td>
@@ -193,9 +213,9 @@ const AdminPanel = () => {
                   </tbody>
               </table>
           </div>
-          {localTeams.length === 0 && (
+          {filteredTeams.length === 0 && (
               <div className="p-8 text-center text-text-muted">
-                  No teams found. Add a team above to get started.
+                  {searchQuery ? "No teams found matching your search." : "No teams found. Add a team above to get started."}
               </div>
           )}
       </section>
