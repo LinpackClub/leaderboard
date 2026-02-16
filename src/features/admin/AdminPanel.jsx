@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLeaderboard } from '../../context/LeaderboardContext';
 import { useAdminLeaderboard } from '../../context/AdminLeaderboardContext';
-import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff, Search } from 'lucide-react';
+import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff, Search, Download, Lock, X } from 'lucide-react';
 import BulkUpload from './BulkUpload';
 import { cn } from '../../utils/cn';
 
@@ -27,9 +27,7 @@ const Toggle = ({ label, checked, onChange }) => (
 
 const AdminPanel = () => {
   const { 
-    // teams, // Replaced by localTeams
     addTeam, 
-    // updateScore, // Replaced by updateScoreOptimistic
     resetScores, 
     visibility, 
     toggleVisibility,
@@ -39,8 +37,15 @@ const AdminPanel = () => {
   // Use the new Optimistic Context
   const { localTeams, updateScoreOptimistic, isSyncing } = useAdminLeaderboard();
 
+  // Local State
   const [newTeamName, setNewTeamName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Security Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null); 
+  const [confirmText, setConfirmText] = useState('');
+  const [error, setError] = useState('');
 
   const handleAddTeam = (e) => {
     e.preventDefault();
@@ -54,8 +59,55 @@ const AdminPanel = () => {
     team.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleDownloadCSV = () => {
+    const headers = ['Rank', 'Team Name', 'Ice Cream', 'Dart', 'Balloon', 'Cup Stack', 'Total Score'];
+    const rows = localTeams.map(team => [
+      team.rank,
+      `"${team.name.replace(/"/g, '""')}"`, // Escape quotes
+      team.iceCreamScore,
+      team.dartScore,
+      team.balloonScore,
+      team.cupStackScore,
+      team.totalScore
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'leaderboard.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Security Handling
+  const initiateAction = (actionFunc, actionTitle) => {
+    setPendingAction({ func: actionFunc, title: actionTitle });
+    setIsModalOpen(true);
+    setConfirmText('');
+    setError('');
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmText === 'CONFIRM') { 
+      if (pendingAction?.func) {
+        pendingAction.func();
+      }
+      setIsModalOpen(false);
+      setPendingAction(null);
+    } else {
+      setError("Please type 'CONFIRM'");
+    }
+  };
+
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 pb-20 relative">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -64,19 +116,29 @@ const AdminPanel = () => {
            <p className="text-text-muted">Manage teams, scores, and visibility</p>
         </div>
         
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-wrap">
             {isSyncing && (
                 <span className="text-sm text-text-muted animate-pulse flex items-center gap-2 mr-4">
                      <Save size={16} /> Saving...
                 </span>
             )}
-           <button onClick={resetScores} className="btn bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20">
+           <button 
+             onClick={() => initiateAction(resetScores, "Reset All Scores")} 
+             className="btn bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20"
+           >
                <RotateCcw size={16} className="mr-2" />
-               Reset All Scores
+               Reset Scores
            </button>
-           <button onClick={resetData} className="btn bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20">
+           <button 
+             onClick={() => initiateAction(resetData, "Reset Database")} 
+             className="btn bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20"
+           >
                <Trash2 size={16} className="mr-2" />
-               Reset Database
+               Reset DB
+           </button>
+           <button onClick={handleDownloadCSV} className="btn bg-bg-card-hover border border-border hover:bg-bg-card-hover/80 text-text-main">
+               <Download size={16} className="mr-2" />
+               CSV
            </button>
         </div>
       </div>
@@ -219,6 +281,64 @@ const AdminPanel = () => {
               </div>
           )}
       </section>
+
+      {/* Security Confirmation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 fade-in">
+            <div className="bg-bg-card border border-border rounded-xl p-6 max-w-sm w-full shadow-2xl scale-in">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
+                        <Lock className="text-primary" size={20} />
+                        Security Check
+                    </h3>
+                    <button onClick={() => setIsModalOpen(false)} className="text-text-muted hover:text-text-main">
+                        <X size={20} />
+                    </button>
+                </div>
+                
+                <p className="text-text-muted mb-4 text-sm">
+                    Are you sure you want to <strong>{pendingAction?.title}</strong>? This action cannot be undone.
+                </p>
+
+                <div className="space-y-4">
+                    <div>
+                        <input 
+                            type="text" 
+                            name="confirmation_text_field"
+                            autoComplete="off"
+                            value={confirmText}
+                            onChange={(e) => {
+                                setConfirmText(e.target.value);
+                                setError('');
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleConfirmAction();
+                            }}
+                            placeholder="Type 'CONFIRM' to proceed"
+                            className="w-full bg-bg-card-hover border border-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary text-text-main placeholder:text-text-muted text-center tracking-widest font-mono text-lg uppercase"
+                            autoFocus
+                        />
+                        {error && <p className="text-red-500 text-xs mt-2 text-center">{error}</p>}
+                    </div>
+
+                    <div className="flex gap-3">
+                        <button 
+                            onClick={() => setIsModalOpen(false)}
+                            className="flex-1 py-2 rounded-lg text-text-muted hover:bg-bg-card-hover transition-colors text-sm font-medium"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={handleConfirmAction}
+                            className="flex-1 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors text-sm font-medium"
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      )}
 
     </div>
   );

@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     const login = (username, password) => {
-        if (username === 'admin' && password === 'password123') {
+        if (username === 'admin' && password === 'LinPack@2026') {
             setIsAuthenticated(true);
             localStorage.setItem('isAdminAuthenticated', 'true');
             return true;
