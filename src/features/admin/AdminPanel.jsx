@@ -4,6 +4,7 @@ import { useAdminLeaderboard } from '../../context/AdminLeaderboardContext';
 import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff, Search, Download, Lock, X } from 'lucide-react';
 import BulkUpload from './BulkUpload';
 import { cn } from '../../utils/cn';
+import SEO from '../../components/seo/SEO';
 
 const Toggle = ({ label, checked, onChange }) => (
   <div className="flex items-center justify-between p-4 bg-bg-card border border-border rounded-lg shadow-sm">
@@ -108,6 +109,7 @@ const AdminPanel = () => {
 
   return (
     <div className="space-y-8 pb-20 relative">
+      <SEO title="Admin Dashboard | VITB GOT LATENT" description="Manage teams and scores." />
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

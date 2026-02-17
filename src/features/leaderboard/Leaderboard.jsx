@@ -7,6 +7,8 @@ import { Trophy } from 'lucide-react';
 
 import LeaderboardSkeleton from './LeaderboardSkeleton';
 
+import SEO from '../../components/seo/SEO';
+
 const Leaderboard = () => {
   const { rankedTeams, visibility, isLoading, maxScores, realtimeBlocked } = useLeaderboard();
 
@@ -19,6 +21,10 @@ const Leaderboard = () => {
 
   return (
     <div className="space-y-8 relative pb-12">
+      <SEO 
+        title="VITB GOT LATENT - Season 2 | Leaderboard"
+        description="Check out the live standings for VITB GOT LATENT Season 2. See who is leading in Ice Cream, Darts, Balloons, and Cup Stacking!"
+      />
       {/* Full Width Header Container - Breaking out of parent padding */}
       <div className="-mt-20 md:-mt-8 -mx-4 md:-mx-8 relative">
           
