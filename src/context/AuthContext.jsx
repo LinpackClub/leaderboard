@@ -12,7 +12,10 @@ export const AuthProvider = ({ children }) => {
     });
 
     const login = (username, password) => {
-        if (username === 'admin' && password === 'LinPack@2026') {
+        const adminUsername = import.meta.env.VITE_ADMIN_USERNAME;
+        const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+
+        if (username === adminUsername && password === adminPassword) {
             setIsAuthenticated(true);
             localStorage.setItem('isAdminAuthenticated', 'true');
             return true;
