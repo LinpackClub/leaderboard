@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, name, type }) => {
+const SEO = ({ title, description, name, type, image }) => {
   return (
     <Helmet>
       { /* Standard metadata tags */ }
@@ -18,9 +18,10 @@ const SEO = ({ title, description, name, type }) => {
       
       { /* Twitter tags */ }
       <meta name="twitter:creator" content={name} />
-      <meta name="twitter:card" content={type} />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
       { /* End Twitter tags */ }
     </Helmet>
   );
@@ -30,7 +31,8 @@ SEO.defaultProps = {
   title: 'VITB GOT LATENT - Season 2 | Leaderboard',
   description: 'Official Leaderboard for VITB GOT LATENT Season 2.',
   name: 'VITB GOT LATENT',
-  type: 'website'
+  type: 'website',
+  image: '/image.png'
 };
 
 export default SEO;
