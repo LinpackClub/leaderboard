@@ -110,7 +110,7 @@ const AdminPanel = () => {
 
   return (
     <div className="space-y-8 pb-20 relative">
-      <SEO title="Admin Dashboard | VITB GOT LATENT" description="Full control over teams, scores, and leaderboard visibility." image="/og-admin.svg" />
+      <SEO title="Admin Dashboard | VITB GOT LATENT" description="Full control over teams, scores, and leaderboard visibility." image="/og-admin.png" />
 
       
       {/* Header */}
