@@ -1,10 +1,15 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, name, type, image }) => {
-  // Build absolute URL for the OG image (required by most social platforms)
+const SEO = ({
+  title = 'VITB GOT LATENT — Season 2 | Leaderboard',
+  description = 'Official live leaderboard for VITB GOT LATENT Season 2. Track every team, every score, in real-time.',
+  name = 'VITB GOT LATENT',
+  type = 'website',
+  image = '/og-leaderboard.svg'
+}) => {
   const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const ogImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
+  const ogImage = image && image.startsWith('http') ? image : `${siteUrl}${image || '/og-leaderboard.svg'}`;
 
   return (
     <Helmet>
@@ -20,7 +25,6 @@ const SEO = ({ title, description, name, type, image }) => {
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:type" content="image/svg+xml" />
 
       {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -30,14 +34,6 @@ const SEO = ({ title, description, name, type, image }) => {
       <meta name="twitter:image" content={ogImage} />
     </Helmet>
   );
-};
-
-SEO.defaultProps = {
-  title: 'VITB GOT LATENT — Season 2 | Leaderboard',
-  description: 'Official live leaderboard for VITB GOT LATENT Season 2. Track every team, every score, in real-time.',
-  name: 'VITB GOT LATENT',
-  type: 'website',
-  image: '/og-leaderboard.svg'
 };
 
 export default SEO;
