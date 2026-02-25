@@ -4,6 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS teams (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_name TEXT UNIQUE NOT NULL,
+    members TEXT DEFAULT '',
     games_playing INT DEFAULT 4 CHECK (games_playing IN (3, 4)),
     ice_cream INT DEFAULT 0 CHECK (ice_cream >= 0),
     dart INT DEFAULT 0 CHECK (dart >= 0),
@@ -23,6 +24,16 @@ IF NOT EXISTS (
 ) THEN
 ALTER TABLE teams
 ADD COLUMN games_playing INT DEFAULT 4 CHECK (games_playing IN (3, 4));
+END IF;
+-- Add members if missing
+IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'teams'
+        AND column_name = 'members'
+) THEN
+ALTER TABLE teams
+ADD COLUMN members TEXT DEFAULT '';
 END IF;
 -- Handle renaming cup_stack to face_painting
 IF EXISTS (
@@ -76,6 +87,7 @@ CREATE TABLE IF NOT EXISTS leaderboard_settings (
     show_dart BOOLEAN DEFAULT TRUE,
     show_balloon BOOLEAN DEFAULT TRUE,
     show_face_painting BOOLEAN DEFAULT TRUE,
+    show_members BOOLEAN DEFAULT TRUE,
     show_total BOOLEAN DEFAULT TRUE,
     leaderboard_visible BOOLEAN DEFAULT FALSE,
     CONSTRAINT single_row CHECK (id = 1)
@@ -103,6 +115,15 @@ ELSIF NOT EXISTS (
 ) THEN
 ALTER TABLE leaderboard_settings
 ADD COLUMN show_face_painting BOOLEAN DEFAULT TRUE;
+END IF;
+IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'leaderboard_settings'
+        AND column_name = 'show_members'
+) THEN
+ALTER TABLE leaderboard_settings
+ADD COLUMN show_members BOOLEAN DEFAULT TRUE;
 END IF;
 END $$;
 -- Insert default settings if not exists
@@ -267,6 +288,7 @@ SET ice_cream = GREATEST(
         face_painting + COALESCE((item->>'face_painting')::int, 0),
         0
     ),
+    members = COALESCE(item->>'members', members),
     last_updated_by = client_id,
     updated_at = now()
 WHERE id = (item->>'id')::uuid;

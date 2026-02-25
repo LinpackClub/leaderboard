@@ -30,6 +30,7 @@ const BulkUpload = () => {
       if (lower.includes('dart')) return 'dart';
       if (lower.includes('balloon')) return 'balloon';
       if (lower.includes('face') || lower.includes('painting')) return 'face_painting';
+      if (lower.includes('member')) return 'members';
       
       return null;
   };
@@ -92,6 +93,8 @@ const BulkUpload = () => {
                       rowData.team_name = String(value).trim();
                       hasTeam = true;
                   }
+              } else if (key === 'members') {
+                  rowData.members = String(value || '').trim();
               } else {
                   // Scores
                   rowData[key] = Number(value) || 0;

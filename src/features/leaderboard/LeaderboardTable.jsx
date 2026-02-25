@@ -2,8 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { ArrowUpDown, Crown } from 'lucide-react';
+import { useLeaderboard } from '../../context/LeaderboardContext';
 
 const LeaderboardTable = ({ teams, visibility }) => {
+  const { setSelectedTeam } = useLeaderboard();
   const [sortConfig, setSortConfig] = useState({ key: 'rank', direction: 'asc' });
 
   const handleSort = (key) => {
@@ -103,8 +105,14 @@ const LeaderboardTable = ({ teams, visibility }) => {
                   </div>
               </td>
               <td className="p-4">
-                  <div className="flex items-center gap-3">
-                      <img src={team.avatar} alt={team.name} className="w-10 h-10 rounded-full border border-border object-cover bg-bg-card" />
+                  <div 
+                    className={cn(
+                        "flex items-center gap-3",
+                        visibility.members && "cursor-pointer group"
+                    )}
+                    onClick={() => visibility.members && setSelectedTeam(team)}
+                  >
+                      <img src={team.avatar} alt={team.name} className="w-10 h-10 rounded-full border border-border object-cover bg-bg-card transition-transform group-hover:scale-110" />
                       <span className="font-bold text-text-main group-hover:text-primary transition-colors">{team.name}</span>
                   </div>
               </td>

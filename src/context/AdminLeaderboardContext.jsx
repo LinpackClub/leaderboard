@@ -53,6 +53,7 @@ export const AdminLeaderboardProvider = ({ children }) => {
       balloonScore: team.balloon,
       facePaintingScore: team.face_painting,
       finalPercent: team.final_percentage,
+      members: team.members || '',
       rank: team.rank
   });
 
@@ -129,6 +130,32 @@ export const AdminLeaderboardProvider = ({ children }) => {
       setIsSyncing(true);
   };
 
+  const updateMembers = (teamId, membersText) => {
+      // 1. Update Local State Immediately
+      setLocalTeams(prev => prev.map(team => {
+          if (team.id === teamId) {
+              return { ...team, members: membersText };
+          }
+          return team;
+      }));
+
+      // 2. Queue the Update
+      if (!pendingUpdates.current[teamId]) {
+          pendingUpdates.current[teamId] = {};
+      }
+      
+      // Overwrite members (not delta)
+      pendingUpdates.current[teamId]['members'] = membersText;
+
+      // 3. Debounce Sync
+      if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+      }
+      
+      timeoutRef.current = setTimeout(syncUpdates, 800);
+      setIsSyncing(true);
+  };
+
   // --- Sync to Server ---
   const syncUpdates = async () => {
       const updatesToSync = pendingUpdates.current;
@@ -167,6 +194,7 @@ export const AdminLeaderboardProvider = ({ children }) => {
   const value = {
       localTeams,
       updateScoreOptimistic,
+      updateMembers,
       isSyncing,
       lastSynced,
       refresh: fetchAdminData

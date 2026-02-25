@@ -18,10 +18,12 @@ export const LeaderboardProvider = ({ children }) => {
     dart: true,
     balloon: true,
     facePainting: true,
+    members: true,
     total: true,
     leaderboard_visible: false, // Default to hidden
     masterToggle: false // Derived from leaderboard_visible for UI compatibility
   });
+  const [selectedTeam, setSelectedTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [realtimeBlocked, setRealtimeBlocked] = useState(false);
@@ -72,6 +74,7 @@ export const LeaderboardProvider = ({ children }) => {
           dartScore: team.dart,
           balloonScore: team.balloon,
           facePaintingScore: team.face_painting,
+          members: team.members || '',
           icePercent: team.ice_percent,
           dartPercent: team.dart_percent,
           balloonPercent: team.balloon_percent,
@@ -92,6 +95,7 @@ export const LeaderboardProvider = ({ children }) => {
           dart: settings.show_dart,
           balloon: settings.show_balloon,
           facePainting: settings.show_face_painting,
+          members: settings.show_members,
           total: settings.show_total,
           leaderboard_visible: settings.leaderboard_visible,
           masterToggle: settings.leaderboard_visible
@@ -192,6 +196,7 @@ export const LeaderboardProvider = ({ children }) => {
           'dart': 'show_dart',
           'balloon': 'show_balloon',
           'facePainting': 'show_face_painting',
+          'members': 'show_members',
           'total': 'show_total',
           'masterToggle': 'leaderboard_visible'
       };
@@ -236,6 +241,7 @@ export const LeaderboardProvider = ({ children }) => {
           dart: Number(row['Dart Game']) || Number(row['Dart']) || 0,
           balloon: Number(row['Balloon Between Us']) || Number(row['Balloon']) || 0,
           face_painting: Number(row['Face Painting']) || 0,
+          members: row['Members'] || row['members'] || '',
           updated_at: new Date()
       })).filter(t => t.team_name); // simple validation
 
@@ -305,7 +311,9 @@ export const LeaderboardProvider = ({ children }) => {
     addTeam,
     resetScores,
     resetData,
-    realtimeBlocked
+    realtimeBlocked,
+    selectedTeam,
+    setSelectedTeam
   };
 
   return (

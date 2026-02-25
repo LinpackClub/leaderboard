@@ -2,7 +2,8 @@ import React from 'react';
 import { useLeaderboard } from '../../context/LeaderboardContext';
 import RankCard from './RankCard';
 import LeaderboardTable from './LeaderboardTable';
-import { motion } from 'framer-motion';
+import MemberPopup from './MemberPopup';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 
 import LeaderboardSkeleton from './LeaderboardSkeleton';
@@ -10,41 +11,32 @@ import LeaderboardSkeleton from './LeaderboardSkeleton';
 import SEO from '../../components/seo/SEO';
 
 const Leaderboard = () => {
-  const { rankedTeams, visibility, isLoading, maxScores, realtimeBlocked } = useLeaderboard();
+  const { rankedTeams, visibility, isLoading, maxScores, realtimeBlocked, selectedTeam, setSelectedTeam } = useLeaderboard();
 
   if (isLoading) {
     return <LeaderboardSkeleton />;
   }
 
-  // Separate top 3 for cards
   const topThree = rankedTeams.slice(0, 3);
 
   return (
-    <div className="space-y-8 relative pb-12">
-      <SEO 
-        title="VITB GOT LATENT - Season 2 | Leaderboard"
-        description="Check out the live standings for VITB GOT LATENT Season 2. See who is leading in Ice Cream, Darts, Balloons, and Cup Stacking!"
-      />
-      {/* Full Width Header Container - Breaking out of parent padding */}
-      <div className="-mt-20 md:-mt-8 -mx-4 md:-mx-8 relative">
-          
-          {/* Dynamic Background with Wave */}
-          {/* Dynamic Background with Wave */}
-          <div className="absolute top-0 left-0 right-0 h-[500px] md:h-[600px] overflow-hidden -z-0">
-              {/* Main Gradient Background - Dynamic Theme Variables */}
-              <div 
-                className="absolute inset-0 opacity-100 transition-colors duration-500"
-                style={{ background: 'linear-gradient(to bottom right, var(--header-gradient-from), var(--header-gradient-via), var(--header-gradient-to))' }}
-              />
-              
-              {/* Grain/Noise Texture Overlay */}
-              <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-multiply" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-              
-              {/* Decorative Blobs - Subtle Warmth */}
-              <div className="absolute w-96 h-96 rounded-full bg-primary/20 blur-3xl -top-20 -right-20 mix-blend-screen" />
-              <div className="absolute w-64 h-64 rounded-full bg-primary/10 blur-3xl top-40 -left-20 mix-blend-screen" />
+    <div className="min-h-screen bg-bg-dark pb-20 relative overflow-hidden">
+      <SEO title="Leaderboard | VITB GOT LATENT" description="Check the latest scores and rankings." />
+      
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-[500px] overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
+          <div className="absolute top-[10%] right-[-5%] w-[30%] h-[50%] bg-secondary/10 blur-[100px] rounded-full animate-pulse delay-700" />
+      </div>
 
-              {/* The Wave SVG */}
+      {/* Hero / Podium Area with Wave Decoration */}
+      <div 
+        className="relative pt-12 pb-24 md:pb-32 overflow-hidden"
+        style={{ 
+          background: 'linear-gradient(to bottom, var(--header-gradient-from), var(--header-gradient-via), var(--header-gradient-to))' 
+        }}
+      >
+          <div className="absolute bottom-0 left-0 w-full h-[150px] z-0">
               <svg 
                 viewBox="0 0 1440 320" 
                 className="absolute bottom-0 w-full h-auto text-bg-dark fill-current transition-colors duration-300"
@@ -57,13 +49,13 @@ const Leaderboard = () => {
           {/* Header Content - Dynamic Text for Theme */}
           <div className="relative z-10 p-4 md:p-8 pt-24 md:pt-12 text-center md:text-left max-w-7xl mx-auto">
             <h1 
-                className="text-4xl md:text-6xl font-extrabold drop-shadow-sm mb-2 tracking-tight transition-colors duration-300"
+                className="text-4xl md:text-6xl font-extrabold drop-shadow-sm mb-2 tracking-tight"
                 style={{ color: 'var(--header-text)' }}
             >
               Leaderboard
             </h1>
             <p 
-                className="font-medium text-lg md:text-xl transition-colors duration-300"
+                className="font-medium text-lg md:text-xl"
                 style={{ color: 'var(--header-text-dim)' }}
             >
                 VITB GOT LATENT - Season 2
@@ -74,23 +66,32 @@ const Leaderboard = () => {
                 <div className="grid grid-cols-2 md:flex md:flex-row items-end justify-center gap-4 md:gap-16 mt-8 pb-12">
                      {/* 2nd Place */}
                      {topThree[1] && (
-                         <div className="col-span-1 order-2 md:order-1 w-full md:w-auto transform md:translate-y-4 md:min-w-[260px]">
+                         <div 
+                           className="col-span-1 order-2 md:order-1 w-full md:w-auto transform md:translate-y-4 md:min-w-[260px] cursor-pointer"
+                           onClick={() => visibility.members && setSelectedTeam(topThree[1])}
+                         >
                             <RankCard team={topThree[1]} rank={2} delay={0} />
                          </div>
                      )}
 
                      {/* 1st Place */}
                      {topThree[0] && (
-                         <div className="col-span-2 md:col-span-1 order-1 md:order-2 w-full md:w-auto flex justify-center mb-6 md:mb-0 z-10 transform scale-110 md:scale-125 origin-bottom md:min-w-[280px]">
-                             <div className="w-full max-w-[70%] md:max-w-none">
-                                <RankCard team={topThree[0]} rank={1} delay={0} />
-                             </div>
-                         </div>
+                         <div 
+                            className="col-span-2 md:col-span-1 order-1 md:order-2 w-full md:w-auto flex justify-center mb-6 md:mb-0 z-10 transform scale-110 md:scale-125 origin-bottom md:min-w-[280px] cursor-pointer"
+                            onClick={() => visibility.members && setSelectedTeam(topThree[0])}
+                          >
+                              <div className="w-full max-w-[70%] md:max-w-none">
+                                 <RankCard team={topThree[0]} rank={1} delay={0} />
+                              </div>
+                          </div>
                      )}
                      
                      {/* 3rd Place */}
                      {topThree[2] && (
-                         <div className="col-span-1 order-3 md:order-3 w-full md:w-auto transform md:translate-y-8 md:min-w-[260px]">
+                         <div 
+                           className="col-span-1 order-3 md:order-3 w-full md:w-auto transform md:translate-y-8 md:min-w-[260px] cursor-pointer"
+                           onClick={() => visibility.members && setSelectedTeam(topThree[2])}
+                         >
                             <RankCard team={topThree[2]} rank={3} delay={0} />
                          </div>
                      )}
@@ -135,6 +136,15 @@ const Leaderboard = () => {
               Live updates limited by browser privacy settings. Updating every few seconds.
           </div>
       )}
+
+      <AnimatePresence>
+        {selectedTeam && (
+          <MemberPopup 
+            team={selectedTeam}
+            onClose={() => setSelectedTeam(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

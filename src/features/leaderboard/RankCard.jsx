@@ -8,9 +8,9 @@ const RankCard = ({ team, rank, delay }) => {
   const isSecond = rank === 2;
   const isThird = rank === 3;
 
-  const rankColor = isFirst ? 'text-yellow-400' : isSecond ? 'text-gray-300' : 'text-orange-400';
-  const glowColor = isFirst ? 'shadow-yellow-500/20' : isSecond ? 'shadow-gray-400/20' : 'shadow-orange-500/20';
-  const borderColor = isFirst ? 'border-yellow-500/30' : isSecond ? 'border-gray-400/30' : 'border-orange-500/30';
+  const rankColor = isFirst ? 'text-[#ffd700]' : isSecond ? 'text-[#c0c0c0]' : 'text-[#ff6b00]';
+  const glowColor = isFirst ? 'shadow-yellow-500/20' : isSecond ? 'shadow-gray-400/20' : 'shadow-primary/20';
+  const borderColor = isFirst ? 'border-yellow-500/30' : isSecond ? 'border-gray-400/30' : 'border-primary/30';
 
   return (
     <motion.div
@@ -18,7 +18,7 @@ const RankCard = ({ team, rank, delay }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.2 }}
       className={cn(
-        "glass-panel rounded-2xl p-6 md:p-6 relative flex flex-col items-center shadow-lg border overflow-hidden transition-all duration-300",
+        "glass-panel rounded-2xl p-6 md:p-6 relative flex flex-col items-center shadow-lg border overflow-hidden transition-all duration-300 cursor-pointer hover:border-primary/50",
         glowColor,
         borderColor,
         // Scale up first place slightly on desktop, normal on mobile
@@ -53,7 +53,7 @@ const RankCard = ({ team, rank, delay }) => {
         
         <div className={cn(
           "w-24 h-24 md:w-20 md:h-20 rounded-full border-4 overflow-hidden relative",
-          isFirst ? "border-yellow-500" : isSecond ? "border-gray-300" : "border-orange-500"
+          isFirst ? "border-yellow-500" : isSecond ? "border-gray-300" : "border-primary"
         )}>
            <img src={team.avatar} alt={team.name} className="w-full h-full object-cover" />
         </div>

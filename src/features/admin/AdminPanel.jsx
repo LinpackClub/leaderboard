@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLeaderboard } from '../../context/LeaderboardContext';
 import { useAdminLeaderboard } from '../../context/AdminLeaderboardContext';
-import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff, Search, Download, Lock, X } from 'lucide-react';
+import { Plus, Trash2, RotateCcw, Save, Eye, EyeOff, Search, Download, Lock, X, CheckCircle } from 'lucide-react';
 import BulkUpload from './BulkUpload';
 import { cn } from '../../utils/cn';
 import SEO from '../../components/seo/SEO';
@@ -36,7 +36,7 @@ const AdminPanel = () => {
   } = useLeaderboard();
 
   // Use the new Optimistic Context
-  const { localTeams, updateScoreOptimistic, isSyncing } = useAdminLeaderboard();
+  const { localTeams, updateScoreOptimistic, updateMembers, isSyncing } = useAdminLeaderboard();
 
   // Local State
   const [newTeamName, setNewTeamName] = useState('');
@@ -120,11 +120,24 @@ const AdminPanel = () => {
         </div>
         
         <div className="flex gap-2 items-center flex-wrap">
-            {isSyncing && (
-                <span className="text-sm text-text-muted animate-pulse flex items-center gap-2 mr-4">
-                     <Save size={16} /> Saving...
-                </span>
-            )}
+            <div className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all duration-300",
+                isSyncing 
+                    ? "bg-primary/10 border-primary/30 text-primary animate-pulse" 
+                    : "bg-green-500/10 border-green-500/30 text-green-500"
+            )}>
+                {isSyncing ? (
+                    <>
+                        <Save size={14} />
+                        <span className="text-xs font-bold uppercase tracking-wider">Syncing Changes...</span>
+                    </>
+                ) : (
+                    <>
+                        <CheckCircle size={14} />
+                        <span className="text-xs font-bold uppercase tracking-wider">All Changes Saved</span>
+                    </>
+                )}
+            </div>
            <button 
              onClick={() => initiateAction(resetScores, "Reset All Scores")} 
              className="btn bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20"
@@ -186,6 +199,11 @@ const AdminPanel = () => {
                   checked={visibility.facePainting} 
                   onChange={() => toggleVisibility('facePainting')} 
               />
+              <Toggle 
+                  label="Show Members" 
+                  checked={visibility.members} 
+                  onChange={() => toggleVisibility('members')} 
+              />
           </div>
       </section>
 
@@ -215,6 +233,9 @@ const AdminPanel = () => {
               <h2 className="text-xl font-semibold flex items-center gap-2 text-text-main">
                   <Save size={20} className="text-primary" />
                   Manage Scores
+                  <span className="text-[10px] items-center text-text-muted font-normal uppercase tracking-widest bg-bg-card-hover px-2 py-0.5 rounded ml-2 hidden md:flex">
+                     Autosave Active
+                  </span>
               </h2>
               
               {/* Search Bar */}
@@ -241,6 +262,7 @@ const AdminPanel = () => {
                           <th className="p-4 text-center text-xs">Dart</th>
                           <th className="p-4 text-center text-xs">Balloon</th>
                           <th className="p-4 text-center text-xs">Face Paint</th>
+                          <th className="p-4 text-center text-xs">Members</th>
                           <th className="p-4 text-right rounded-tr-lg text-xs">Overall</th>
                       </tr>
                   </thead>
@@ -282,6 +304,16 @@ const AdminPanel = () => {
                                       </div>
                                   </td>
                               ))}
+
+                              <td className="p-4">
+                                  <textarea
+                                    className="w-full min-w-[150px] bg-bg-card-hover border border-border rounded px-2 py-1 text-xs text-text-main focus:border-primary focus:outline-none resize-none"
+                                    rows="2"
+                                    placeholder="Member list (comma-separated)"
+                                    value={team.members || ''}
+                                    onChange={(e) => updateMembers(team.id, e.target.value)}
+                                  />
+                              </td>
 
                               <td className="p-4 text-right font-bold text-primary text-sm whitespace-nowrap">
                                   {team.finalPercent}%
