@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
@@ -66,28 +66,40 @@ const RankCard = ({ team, rank, delay }) => {
       </div>
 
       <h3 className="font-bold text-lg md:text-lg mb-0.5 text-text-main">{team.name}</h3>
-      <p className="text-xs md:text-sm text-text-muted mb-3">Total Score</p>
+      <p className="text-xs md:text-sm text-text-muted mb-3">Overall Percentage</p>
       
       <div className="text-3xl md:text-3xl font-bold text-text-main">
-        {team.totalScore}
+        {team.finalPercent}%
       </div>
 
       <div className="mt-6 w-full grid grid-cols-2 gap-2 text-xs text-text-muted border-t border-border pt-4">
           <div className="flex flex-col items-center">
               <span>Ice Cream</span>
-              <span className="text-text-main font-medium">{team.iceCreamScore}</span>
+              <span className="text-text-main font-medium">
+                  {team.gamesPlaying === 3 ? '—' : team.iceCreamScore}
+                  {team.gamesPlaying === 4 && team.iceRank === 1 && team.iceCreamScore > 0 && <Crown size={10} className="inline ml-1 -mt-1 text-yellow-500" />}
+              </span>
           </div>
           <div className="flex flex-col items-center">
               <span>Dart</span>
-              <span className="text-text-main font-medium">{team.dartScore}</span>
+              <span className="text-text-main font-medium">
+                  {team.dartScore}
+                  {team.dartRank === 1 && team.dartScore > 0 && <Crown size={10} className="inline ml-1 -mt-1 text-yellow-500" />}
+              </span>
           </div>
            <div className="flex flex-col items-center">
               <span>Balloon</span>
-              <span className="text-text-main font-medium">{team.balloonScore}</span>
+              <span className="text-text-main font-medium">
+                  {team.balloonScore}
+                  {team.balloonRank === 1 && team.balloonScore > 0 && <Crown size={10} className="inline ml-1 -mt-1 text-yellow-500" />}
+              </span>
           </div>
           <div className="flex flex-col items-center">
-              <span>Cup Stack</span>
-              <span className="text-text-main font-medium">{team.cupStackScore}</span>
+              <span>Face Paint</span>
+              <span className="text-text-main font-medium">
+                  {team.facePaintingScore}
+                  {team.faceRank === 1 && team.facePaintingScore > 0 && <Crown size={10} className="inline ml-1 -mt-1 text-yellow-500" />}
+              </span>
           </div>
       </div>
     </motion.div>

@@ -25,10 +25,11 @@ const BulkUpload = () => {
       const lower = header.toLowerCase().trim();
       
       if (lower.includes('team')) return 'team_name';
+      if (lower.includes('playing')) return 'games_playing';
       if (lower.includes('ice') || lower.includes('cream')) return 'ice_cream';
       if (lower.includes('dart')) return 'dart';
       if (lower.includes('balloon')) return 'balloon';
-      if (lower.includes('cup') || lower.includes('stack')) return 'cup_stack';
+      if (lower.includes('face') || lower.includes('painting')) return 'face_painting';
       
       return null;
   };
@@ -76,10 +77,11 @@ const BulkUpload = () => {
           let hasTeam = false;
 
           // Fill default 0s
+          rowData.games_playing = 4;
           rowData.ice_cream = 0;
           rowData.dart = 0;
           rowData.balloon = 0;
-          rowData.cup_stack = 0;
+          rowData.face_painting = 0;
 
           Object.keys(columnMap).forEach(colIndex => {
               const key = columnMap[colIndex];
@@ -190,7 +192,7 @@ const BulkUpload = () => {
             Excel files only (.xlsx, .xls)
           </p>
           <p className="text-xs text-text-dim mt-2">
-            Required Columns: Team Name, Ice Cream, Dart, Balloon, Cup Stack
+            Required Columns: Team Name, Games Playing, Ice Cream Fight, Dart Game, Balloon Between Us, Face Painting
           </p>
         </div>
 

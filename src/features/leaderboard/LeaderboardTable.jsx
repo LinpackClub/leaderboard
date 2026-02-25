@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { ArrowUpDown, Crown } from 'lucide-react';
 
-const LeaderboardTable = ({ teams, visibility, maxScores }) => {
+const LeaderboardTable = ({ teams, visibility }) => {
   const [sortConfig, setSortConfig] = useState({ key: 'rank', direction: 'asc' });
 
   const handleSort = (key) => {
@@ -38,10 +38,6 @@ const LeaderboardTable = ({ teams, visibility, maxScores }) => {
       return <ArrowUpDown size={14} className={sortConfig.direction === 'asc' ? "opacity-100 rotate-180" : "opacity-100"} />;
   };
 
-  const isHighScore = (score, category) => {
-      return score > 0 && maxScores && score === maxScores[category];
-  };
-
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full text-left border-collapse">
@@ -68,14 +64,14 @@ const LeaderboardTable = ({ teams, visibility, maxScores }) => {
                    <div className="flex items-center justify-center gap-1">Balloon <SortIcon column="balloonScore" /></div>
                 </th>
             )}
-            {visibility.cupStack && (
-                <th className="p-4 text-center cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('cupStackScore')}>
-                   <div className="flex items-center justify-center gap-1">Cup Stack <SortIcon column="cupStackScore" /></div>
+            {visibility.facePainting && (
+                <th className="p-4 text-center cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('facePaintingScore')}>
+                   <div className="flex items-center justify-center gap-1">Face Painting <SortIcon column="facePaintingScore" /></div>
                 </th>
             )}
             {visibility.total && (
-                <th className="p-4 text-right cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('totalScore')}>
-                   <div className="flex items-center justify-end gap-1">Total <SortIcon column="totalScore" /></div>
+                <th className="p-4 text-right cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('finalPercent')}>
+                   <div className="flex items-center justify-end gap-1">Overall % <SortIcon column="finalPercent" /></div>
                 </th>
             )}
           </tr>
@@ -115,23 +111,27 @@ const LeaderboardTable = ({ teams, visibility, maxScores }) => {
               
               {visibility.iceCream && (
                   <td className="p-4 text-center">
-                      <span className={cn(
-                          "font-mono font-medium",
-                          isHighScore(team.iceCreamScore, 'iceCream') && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
-                      )}>
-                          {team.iceCreamScore}
-                          {isHighScore(team.iceCreamScore, 'iceCream') && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
-                      </span>
+                      {team.gamesPlaying === 3 ? (
+                          <span className="text-text-dim/30 italic text-xs">Excluded</span>
+                      ) : (
+                          <span className={cn(
+                              "font-mono font-medium",
+                              team.iceRank === 1 && team.iceCreamScore > 0 && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
+                          )}>
+                              {team.iceCreamScore}
+                              {team.iceRank === 1 && team.iceCreamScore > 0 && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
+                          </span>
+                      )}
                   </td>
               )}
                {visibility.dart && (
                   <td className="p-4 text-center">
                        <span className={cn(
                           "font-mono font-medium",
-                          isHighScore(team.dartScore, 'dart') && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
+                          team.dartRank === 1 && team.dartScore > 0 && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
                       )}>
                           {team.dartScore}
-                          {isHighScore(team.dartScore, 'dart') && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
+                          {team.dartRank === 1 && team.dartScore > 0 && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
                       </span>
                   </td>
               )}
@@ -139,28 +139,28 @@ const LeaderboardTable = ({ teams, visibility, maxScores }) => {
                   <td className="p-4 text-center">
                        <span className={cn(
                           "font-mono font-medium",
-                          isHighScore(team.balloonScore, 'balloon') && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
+                          team.balloonRank === 1 && team.balloonScore > 0 && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
                       )}>
                           {team.balloonScore}
-                          {isHighScore(team.balloonScore, 'balloon') && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
+                          {team.balloonRank === 1 && team.balloonScore > 0 && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
                       </span>
                   </td>
               )}
-               {visibility.cupStack && (
+               {visibility.facePainting && (
                   <td className="p-4 text-center">
                        <span className={cn(
                           "font-mono font-medium",
-                          isHighScore(team.cupStackScore, 'cupStack') && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
+                          team.faceRank === 1 && team.facePaintingScore > 0 && "text-yellow-500 font-bold drop-shadow-sm scale-110 inline-block"
                       )}>
-                          {team.cupStackScore}
-                          {isHighScore(team.cupStackScore, 'cupStack') && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
+                          {team.facePaintingScore}
+                          {team.faceRank === 1 && team.facePaintingScore > 0 && <Crown size={12} className="inline ml-1 -mt-1 text-yellow-500" />}
                       </span>
                   </td>
               )}
               
                {visibility.total && (
                   <td className="p-4 text-right">
-                      <span className="font-bold text-xl text-primary">{team.totalScore}</span>
+                      <span className="font-bold text-xl text-primary">{team.finalPercent}%</span>
                   </td>
               )}
             </motion.tr>

@@ -124,7 +124,7 @@ const Leaderboard = () => {
                         Total: {rankedTeams.length}
                     </span>
                 </div>
-                <LeaderboardTable teams={rankedTeams} visibility={visibility} maxScores={maxScores} />
+                <LeaderboardTable teams={rankedTeams} visibility={visibility} />
             </motion.div>
         </>
       )}

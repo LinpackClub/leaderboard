@@ -61,15 +61,16 @@ const AdminPanel = () => {
   );
 
   const handleDownloadCSV = () => {
-    const headers = ['Rank', 'Team Name', 'Ice Cream', 'Dart', 'Balloon', 'Cup Stack', 'Total Score'];
+    const headers = ['Rank', 'Team Name', 'Games Playing', 'Ice Cream', 'Dart', 'Balloon', 'Face Painting', 'Overall %'];
     const rows = localTeams.map(team => [
       team.rank,
       `"${team.name.replace(/"/g, '""')}"`, // Escape quotes
+      team.gamesPlaying,
       team.iceCreamScore,
       team.dartScore,
       team.balloonScore,
-      team.cupStackScore,
-      team.totalScore
+      team.facePaintingScore,
+      team.finalPercent
     ]);
 
     const csvContent = [
@@ -161,7 +162,7 @@ const AdminPanel = () => {
                   onChange={() => toggleVisibility('masterToggle')} 
               />
                <Toggle 
-                  label="Total Score" 
+                  label="Overall %" 
                   checked={visibility.total} 
                   onChange={() => toggleVisibility('total')} 
               />
@@ -181,9 +182,9 @@ const AdminPanel = () => {
                   onChange={() => toggleVisibility('balloon')} 
               />
               <Toggle 
-                  label="Cup Stack Score" 
-                  checked={visibility.cupStack} 
-                  onChange={() => toggleVisibility('cupStack')} 
+                  label="Face Paint Score" 
+                  checked={visibility.facePainting} 
+                  onChange={() => toggleVisibility('facePainting')} 
               />
           </div>
       </section>
@@ -233,44 +234,57 @@ const AdminPanel = () => {
               <table className="w-full text-left">
                   <thead className="bg-bg-card-hover text-text-muted uppercase text-sm font-semibold">
                       <tr>
-                          <th className="p-4 rounded-tl-lg">Rank</th>
-                          <th className="p-4">Team Name</th>
-                          <th className="p-4 text-center">Ice Cream</th>
-                          <th className="p-4 text-center">Dart</th>
-                          <th className="p-4 text-center">Balloon</th>
-                          <th className="p-4 text-center">Cup Stack</th>
-                          <th className="p-4 text-right rounded-tr-lg">Total</th>
+                          <th className="p-4 rounded-tl-lg text-xs">Rank</th>
+                          <th className="p-4 text-xs">Team Name</th>
+                          <th className="p-4 text-center text-xs">Type</th>
+                          <th className="p-4 text-center text-xs">Ice Cream</th>
+                          <th className="p-4 text-center text-xs">Dart</th>
+                          <th className="p-4 text-center text-xs">Balloon</th>
+                          <th className="p-4 text-center text-xs">Face Paint</th>
+                          <th className="p-4 text-right rounded-tr-lg text-xs">Overall</th>
                       </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                       {filteredTeams.map((team, index) => (
                           <tr key={team.id} className="hover:bg-bg-card-hover/50 transition-colors">
-                              <td className="p-4 font-bold text-text-muted">#{team.rank}</td>
-                              <td className="p-4 font-medium text-text-main">{team.name}</td>
+                               <td className="p-4 font-bold text-text-muted text-sm">#{team.rank}</td>
+                              <td className="p-4 font-medium text-text-main text-sm">{team.name}</td>
+                              <td className="p-4 text-center text-[10px] text-text-muted font-mono">{team.gamesPlaying}G</td>
                               
                               {/* Score Columns with +/- buttons */}
-                              {['iceCreamScore', 'dartScore', 'balloonScore', 'cupStackScore'].map((field) => (
+                              {[
+                                { field: 'iceCreamScore', label: 'ice' },
+                                { field: 'dartScore', label: 'dart' },
+                                { field: 'balloonScore', label: 'balloon' },
+                                { field: 'facePaintingScore', label: 'face' }
+                              ].map(({ field }) => (
                                   <td key={field} className="p-4">
-                                      <div className="flex items-center justify-center gap-2">
-                                          <button 
-                                            onClick={() => updateScoreOptimistic(team.id, field, -1)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-card border border-border hover:border-red-500/50 hover:text-red-500 transition-colors"
-                                          >
-                                              -
-                                          </button>
-                                          <span className="w-8 text-center font-bold text-text-main">{team[field]}</span>
-                                          <button 
-                                            onClick={() => updateScoreOptimistic(team.id, field, 1)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-card border border-border hover:border-green-500/50 hover:text-green-500 transition-colors"
-                                          >
-                                              +
-                                          </button>
+                                      <div className="flex items-center justify-center gap-1.5">
+                                          {field === 'iceCreamScore' && team.gamesPlaying === 3 ? (
+                                              <span className="text-text-dim/20 italic text-[10px]">Exc</span>
+                                          ) : (
+                                              <>
+                                                  <button 
+                                                    onClick={() => updateScoreOptimistic(team.id, field, -1)}
+                                                    className="w-6 h-6 flex items-center justify-center rounded-full bg-bg-card border border-border hover:border-red-500/50 hover:text-red-500 transition-colors text-xs"
+                                                  >
+                                                      -
+                                                  </button>
+                                                  <span className="w-6 text-center font-bold text-text-main text-sm">{team[field]}</span>
+                                                  <button 
+                                                    onClick={() => updateScoreOptimistic(team.id, field, 1)}
+                                                    className="w-6 h-6 flex items-center justify-center rounded-full bg-bg-card border border-border hover:border-green-500/50 hover:text-green-500 transition-colors text-xs"
+                                                  >
+                                                      +
+                                                  </button>
+                                              </>
+                                          )}
                                       </div>
                                   </td>
                               ))}
 
-                              <td className="p-4 text-right font-bold text-primary text-lg">
-                                  {team.totalScore}
+                              <td className="p-4 text-right font-bold text-primary text-sm whitespace-nowrap">
+                                  {team.finalPercent}%
                               </td>
                           </tr>
                       ))}

@@ -17,7 +17,7 @@ export const LeaderboardProvider = ({ children }) => {
     iceCream: true,
     dart: true,
     balloon: true,
-    cupStack: true,
+    facePainting: true,
     total: true,
     leaderboard_visible: false, // Default to hidden
     masterToggle: false // Derived from leaderboard_visible for UI compatibility
@@ -67,12 +67,22 @@ export const LeaderboardProvider = ({ children }) => {
           id: team.id,
           name: team.team_name,
           avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${team.team_name}`,
+          gamesPlaying: team.games_playing,
           iceCreamScore: team.ice_cream,
           dartScore: team.dart,
           balloonScore: team.balloon,
-          cupStackScore: team.cup_stack,
+          facePaintingScore: team.face_painting,
+          icePercent: team.ice_percent,
+          dartPercent: team.dart_percent,
+          balloonPercent: team.balloon_percent,
+          facePercent: team.face_percent,
+          finalPercent: team.final_percentage,
           totalScore: team.total,
-          rank: team.rank
+          rank: team.rank,
+          iceRank: team.ice_rank,
+          dartRank: team.dart_rank,
+          balloonRank: team.balloon_rank,
+          faceRank: team.face_rank
       }));
   };
   
@@ -81,7 +91,7 @@ export const LeaderboardProvider = ({ children }) => {
           iceCream: settings.show_ice_cream,
           dart: settings.show_dart,
           balloon: settings.show_balloon,
-          cupStack: settings.show_cup_stack,
+          facePainting: settings.show_face_painting,
           total: settings.show_total,
           leaderboard_visible: settings.leaderboard_visible,
           masterToggle: settings.leaderboard_visible
@@ -146,7 +156,7 @@ export const LeaderboardProvider = ({ children }) => {
       iceCream: Math.max(...rankedTeams.map(t => t.iceCreamScore || 0), 0),
       dart: Math.max(...rankedTeams.map(t => t.dartScore || 0), 0),
       balloon: Math.max(...rankedTeams.map(t => t.balloonScore || 0), 0),
-      cupStack: Math.max(...rankedTeams.map(t => t.cupStackScore || 0), 0),
+      facePainting: Math.max(...rankedTeams.map(t => t.facePaintingScore || 0), 0),
     };
   }, [rankedTeams]);
 
@@ -158,7 +168,7 @@ export const LeaderboardProvider = ({ children }) => {
          'iceCreamScore': 'ice_cream',
          'dartScore': 'dart',
          'balloonScore': 'balloon',
-         'cupStackScore': 'cup_stack'
+         'facePaintingScore': 'face_painting'
      };
      
      const dbColumn = columnMap[field] || field;
@@ -181,7 +191,7 @@ export const LeaderboardProvider = ({ children }) => {
           'iceCream': 'show_ice_cream',
           'dart': 'show_dart',
           'balloon': 'show_balloon',
-          'cupStack': 'show_cup_stack',
+          'facePainting': 'show_face_painting',
           'total': 'show_total',
           'masterToggle': 'leaderboard_visible'
       };
@@ -221,10 +231,11 @@ export const LeaderboardProvider = ({ children }) => {
       
       const upsertData = teamsData.map(row => ({
           team_name: row['Team Name'],
-          ice_cream: Number(row['Ice Cream']) || 0,
-          dart: Number(row['Dart']) || 0,
-          balloon: Number(row['Balloon']) || 0,
-          cup_stack: Number(row['Cup Stack']) || 0,
+          games_playing: Number(row['Games Playing']) || 4,
+          ice_cream: Number(row['Ice Cream Fight']) || Number(row['Ice Cream']) || 0,
+          dart: Number(row['Dart Game']) || Number(row['Dart']) || 0,
+          balloon: Number(row['Balloon Between Us']) || Number(row['Balloon']) || 0,
+          face_painting: Number(row['Face Painting']) || 0,
           updated_at: new Date()
       })).filter(t => t.team_name); // simple validation
 
@@ -256,7 +267,7 @@ export const LeaderboardProvider = ({ children }) => {
                 ice_cream: 0, 
                 dart: 0, 
                 balloon: 0, 
-                cup_stack: 0,
+                face_painting: 0,
                 updated_at: new Date()
             })
             .neq('id', '00000000-0000-0000-0000-000000000000'); // Updates all rows

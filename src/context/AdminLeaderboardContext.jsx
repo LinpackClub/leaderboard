@@ -47,11 +47,12 @@ export const AdminLeaderboardProvider = ({ children }) => {
       id: team.id,
       name: team.team_name,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${team.team_name}`,
+      gamesPlaying: team.games_playing,
       iceCreamScore: team.ice_cream,
       dartScore: team.dart,
       balloonScore: team.balloon,
-      cupStackScore: team.cup_stack,
-      totalScore: team.total,
+      facePaintingScore: team.face_painting,
+      finalPercent: team.final_percentage,
       rank: team.rank
   });
 
@@ -72,7 +73,6 @@ export const AdminLeaderboardProvider = ({ children }) => {
              }
              
              // 2. Ideally we just update the specific row, but for simplicity/safety we refetch keys
-             // Or better, apply the change to local state if it's external
              console.log("External update received, refreshing...");
              fetchAdminData();
         }
@@ -92,26 +92,24 @@ export const AdminLeaderboardProvider = ({ children }) => {
           if (team.id === teamId) {
               const newScore = Math.max((team[field] || 0) + delta, 0); // Prevent negative locally
               
-              // Calculate new total roughly (rank won't update until server sync, which is fine)
               const oldScore = team[field] || 0;
-              const diff = newScore - oldScore; // Actual applied delta (in case of 0 floor)
+              const diff = newScore - oldScore; // Actual applied delta
               
               return {
                   ...team,
                   [field]: newScore,
-                  totalScore: team.totalScore + diff
+                  finalPercent: team.finalPercent + (diff * (team.gamesPlaying === 4 ? 0.25 : 0.33)) // Rough estimate for UI feel
               };
           }
           return team;
       }));
 
       // 2. Queue the Delta
-      // Map frontend field to DB column
       const columnMap = {
          'iceCreamScore': 'ice_cream',
          'dartScore': 'dart',
          'balloonScore': 'balloon',
-         'cupStackScore': 'cup_stack'
+         'facePaintingScore': 'face_painting'
       };
       const dbColumn = columnMap[field];
       
@@ -136,8 +134,6 @@ export const AdminLeaderboardProvider = ({ children }) => {
       const updatesToSync = pendingUpdates.current;
       pendingUpdates.current = {}; // Clear queue
       
-      // Convert map to array for RPC
-      // Structure: [ { id: uuid, ice_cream: delta, ... } ]
       const payload = Object.entries(updatesToSync).map(([id, changes]) => ({
           id,
           ...changes
@@ -156,8 +152,6 @@ export const AdminLeaderboardProvider = ({ children }) => {
           
           if (error) {
               console.error("Batch update failed:", error);
-              // In a real robust app, we might rollback here. 
-              // For now, we rely on next fetch to correct state.
               fetchAdminData(); 
           } else {
               setLastSynced(new Date());
