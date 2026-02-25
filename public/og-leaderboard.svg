@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d0f"/>
+      <stop offset="100%" style="stop-color:#18181b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f97316"/>
+      <stop offset="100%" style="stop-color:#fb923c"/>
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+    <filter id="logo-shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Glow orb -->
+  <ellipse cx="600" cy="180" rx="350" ry="220" fill="#f97316" opacity="0.07" filter="url(#blur)"/>
+
+  <!-- Border frame -->
+  <rect x="24" y="24" width="1152" height="582" rx="24" fill="none" stroke="#2a2a35" stroke-width="1.5"/>
+
+  <!-- Top accent line -->
+  <rect x="24" y="24" width="1152" height="4" rx="2" fill="url(#accent)"/>
+
+  <!-- Logo top-left -->
+  <image href="/logo.png" x="52" y="52" width="56" height="56" filter="url(#logo-shadow)"/>
+
+  <!-- Rank cards (decorative) -->
+  <!-- 1st place podium - crown SVG instead of emoji -->
+  <rect x="535" y="370" width="130" height="120" rx="12" fill="#f97316" opacity="0.1" stroke="#f97316" stroke-width="1" stroke-opacity="0.3"/>
+  <!-- Crown SVG icon -->
+  <g transform="translate(575, 386) scale(1.05)">
+    <polygon points="25,32 5,48 0,20 12.5,28 25,10 37.5,28 50,20 45,48" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="5" y="48" width="40" height="6" rx="2" fill="#f97316" opacity="0.6"/>
+  </g>
+  <text x="600" y="468" font-family="system-ui, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#f97316" opacity="0.8">#1</text>
+
+  <!-- 2nd place -->
+  <rect x="390" y="400" width="120" height="90" rx="12" fill="#ffffff" opacity="0.04" stroke="#ffffff" stroke-width="1" stroke-opacity="0.1"/>
+  <text x="450" y="455" font-family="system-ui, sans-serif" font-size="34" text-anchor="middle" fill="#94a3b8">2</text>
+
+  <!-- 3rd place -->
+  <rect x="690" y="415" width="120" height="75" rx="12" fill="#ffffff" opacity="0.04" stroke="#ffffff" stroke-width="1" stroke-opacity="0.1"/>
+  <text x="750" y="462" font-family="system-ui, sans-serif" font-size="32" text-anchor="middle" fill="#64748b">3</text>
+
+  <!-- Score bars (decorative) -->
+  <rect x="140" y="350" width="200" height="8" rx="4" fill="#27272a"/>
+  <rect x="140" y="350" width="180" height="8" rx="4" fill="#f97316" opacity="0.7"/>
+  <rect x="140" y="375" width="200" height="8" rx="4" fill="#27272a"/>
+  <rect x="140" y="375" width="140" height="8" rx="4" fill="#f97316" opacity="0.5"/>
+  <rect x="140" y="400" width="200" height="8" rx="4" fill="#27272a"/>
+  <rect x="140" y="400" width="100" height="8" rx="4" fill="#f97316" opacity="0.35"/>
+
+  <!-- Team list rows (decorative) -->
+  <rect x="860" y="320" width="280" height="40" rx="8" fill="#1c1c22" stroke="#2a2a35" stroke-width="1"/>
+  <circle cx="887" cy="340" r="10" fill="#f97316" opacity="0.2"/>
+  <text x="887" y="345" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#f97316">1</text>
+  <rect x="907" y="334" width="100" height="8" rx="3" fill="#3a3a45"/>
+  <rect x="1070" y="334" width="50" height="8" rx="3" fill="#f97316" opacity="0.5"/>
+
+  <rect x="860" y="370" width="280" height="40" rx="8" fill="#1c1c22" stroke="#2a2a35" stroke-width="1"/>
+  <circle cx="887" cy="390" r="10" fill="#ffffff" opacity="0.06"/>
+  <text x="887" y="395" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#64748b">2</text>
+  <rect x="907" y="384" width="80" height="8" rx="3" fill="#2a2a35"/>
+  <rect x="1070" y="384" width="40" height="8" rx="3" fill="#64748b" opacity="0.5"/>
+
+  <rect x="860" y="420" width="280" height="40" rx="8" fill="#1c1c22" stroke="#2a2a35" stroke-width="1"/>
+  <circle cx="887" cy="440" r="10" fill="#ffffff" opacity="0.04"/>
+  <text x="887" y="445" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#64748b">3</text>
+  <rect x="907" y="434" width="70" height="8" rx="3" fill="#2a2a35"/>
+  <rect x="1070" y="434" width="34" height="8" rx="3" fill="#64748b" opacity="0.4"/>
+
+  <!-- Main text -->
+  <text x="600" y="175" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="600" text-anchor="middle" fill="#f97316" letter-spacing="6" opacity="0.9">VITB GOT LATENT · SEASON 2</text>
+  <text x="600" y="265" font-family="system-ui, -apple-system, sans-serif" font-size="78" font-weight="900" text-anchor="middle" fill="#ffffff" letter-spacing="-2">Leaderboard</text>
+  <text x="600" y="318" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="400" text-anchor="middle" fill="#64748b">Track every team. Every score. In real-time.</text>
+
+  <!-- Bottom tagline -->
+  <text x="600" y="570" font-family="system-ui, sans-serif" font-size="16" font-weight="500" text-anchor="middle" fill="#3a3a50" letter-spacing="2">LIVE RESULTS · INSTANT UPDATES · OFFICIAL RANKINGS</text>
+</svg>

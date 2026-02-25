@@ -23,7 +23,8 @@ const Login = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
-            <SEO title="Admin Login | VITB GOT LATENT" description="Admin login area." />
+            <SEO title="Admin Login | VITB GOT LATENT" description="Secure admin login for VITB GOT LATENT leaderboard management." image="/og-admin.svg" />
+
             <div className="glass-panel w-full max-w-md p-8 rounded-2xl border border-border shadow-xl">
                 <div className="flex flex-col items-center mb-8">
                     <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
