@@ -9,12 +9,26 @@ const MemberPopup = ({ team, onClose }) => {
   const memberList = members ? members.split(',').map(m => m.trim()).filter(m => m) : [];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ 
+          type: "spring", 
+          damping: 25, 
+          stiffness: 300,
+          exit: { duration: 0.15 } 
+        }}
         className="relative w-full max-w-md bg-bg-card border border-border/10 rounded-2xl p-6 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Background Highlight */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
@@ -69,7 +83,7 @@ const MemberPopup = ({ team, onClose }) => {
           </button>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
