@@ -13,25 +13,21 @@ const MemberPopup = ({ team, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+      transition={{ duration: 0.15 }}
+      // Removed backdrop-blur for performance on mobile
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75"
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        transition={{ 
-          type: "spring", 
-          damping: 25, 
-          stiffness: 300,
-          exit: { duration: 0.15 } 
-        }}
-        className="relative w-full max-w-md bg-bg-card border border-border/10 rounded-2xl p-6 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+        className="relative w-full max-w-md bg-bg-card border border-border/10 rounded-2xl p-6 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Background Highlight */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
+        {/* Simple static background accent */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
         
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -45,31 +41,29 @@ const MemberPopup = ({ team, onClose }) => {
           </div>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-card-hover text-text-muted hover:text-text-main transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-bg-card-hover text-text-muted active:scale-95 transition-transform"
+            aria-label="Close"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
-        <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
           {memberList.length > 0 ? (
             memberList.map((member, idx) => (
-              <motion.div
+              <div
                 key={idx}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="p-3 rounded-lg bg-bg-card-hover border border-border/50 text-text-main font-medium flex items-center gap-3"
+                className="p-3 rounded-lg bg-bg-card-hover border border-border/5 text-text-main font-medium flex items-center gap-3"
               >
-                <span className="w-6 h-6 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-bold">
+                <span className="w-6 h-6 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-bold flex-shrink-0">
                   {idx + 1}
                 </span>
-                {member}
-              </motion.div>
+                <span className="truncate">{member}</span>
+              </div>
             ))
           ) : (
             <div className="text-center py-8">
-              <p className="text-text-muted italic">No members listed for this team.</p>
+              <p className="text-text-muted italic">No members listed.</p>
             </div>
           )}
         </div>
@@ -77,7 +71,7 @@ const MemberPopup = ({ team, onClose }) => {
         <div className="mt-8">
           <button 
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20"
+            className="w-full py-4 rounded-xl bg-primary text-white font-bold active:opacity-90 transition-opacity shadow-lg"
           >
             Close
           </button>
